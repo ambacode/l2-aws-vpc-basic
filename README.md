@@ -4,6 +4,7 @@ Create one EC2 instance in each subnet with keypair configured
 Configure security group to allow only ssh (and scp.. same port)
 Test by ssh to public ec2 (bastion host) and ssh from there to private ec2
 
+Steps:
 create .gitignore
 
 git init
