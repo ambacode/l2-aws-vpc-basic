@@ -1,3 +1,9 @@
+High level:
+Create VPC with 2 subnets, one public and one private, and an internet gateway
+Create one EC2 instance in each subnet with keypair configured
+Configure security group to allow only ssh (and scp.. same port)
+Test by ssh to public ec2 (bastion host) and ssh from there to private ec2
+
 create .gitignore
 
 git init
