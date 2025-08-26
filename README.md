@@ -1,43 +1,65 @@
-High level:
-Create VPC with 2 subnets, one public and one private, and an internet gateway
-Create one EC2 instance in each subnet with keypair configured
-Configure security group to allow only ssh (and scp.. same port)
-Test by ssh to public ec2 (bastion host) and ssh from there to private ec2
+AWS VPC Basics with Terraform
+
+Overview
+This project demonstrates building a simple AWS VPC networking environment using Infrastructure as Code (IaC) with Terraform.
+
+The lab deploys:
+A VPC with 1 public and 1 private subnet
+An Internet Gateway for outbound internet access
+2 EC2 instances (1 in public subnet as bastion host, 1 in private subnet)
+A Security Group allowing only SSH (port 22)
+
+Testing was completed by successfully SSH’ing into the public EC2 bastion host, then connecting from there into the private EC2 instance.
+
+Services used:
+VPC, Subnets, Internet Gateway, Route Table, Security Groups, EC2
+
+Tools:
+Terraform, AWS CLI, Git
+
+Prerequisites:
+AWS CLI configured with IAM credentials
+Terraform
 
 Steps:
-create .gitignore
-
 git init
-
 terraform init
-
-vscode to create variables.tf and main.tf
-
 terraform plan
-
 terraform apply
 
-get public ip for public ec2:
-terraform output ec2_public_ip
+Get outputs
+terraform output public_instance_ip
+terraform output private_instance_ip
 
-get private ip for private ec2:
-terraform output ec2_private_ip
+SSH Test
+Copy private key to bastion host:
+scp -i ./ec2_private_key.pem ./ec2_private_key.pem ec2-user@<public_ip>:~/.ssh/
 
-keypair will be saved locally to working dir:
-ec2_private_key.pem
-! note for the sake of simplicity we are using the same keypair for both ec2 instances
+SSH into bastion:
+ssh -i ec2_private_key.pem ec2-user@<public_ip>
 
-copy private key to public ec2 bastion host
-scp -i ./ec2_private_key.pem ./ec2_private_key.pem ec2-user@<ec2 public ip>:~/.ssh/
-
-ssh to public ec2
-ssh -i ec2_private_key.pem ec2-user@<ec2 public ip>
-
-set permissions for key file on bastion host if necessary
+Set permissions if needed:
 chmod 400 ~/.ssh/ec2_private_key.pem
 
-ssh to private ec2
-ssh -i ./.ssh/ec2_private_key.pem ec2-user@<ec2 private ip>
+From bastion, SSH into private instance:
+ssh -i ./.ssh/ec2_private_key.pem ec2-user@<private_ip>
 
-then tear it all down:
+Teardown
 terraform destroy
+
+Project Structure
+.
+main.tf
+variables.tf
+outputs.tf
+ec2_private_key.pem (local only, not in repo)
+README.txt
+
+Key Learnings
+Created AWS infrastructure using Terraform IaC
+Implemented a bastion host to securely access private resources
+Practiced configuring and testing SSH access through layered networks
+
+References
+AWS VPC Documentation: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
+Terraform AWS Provider: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
